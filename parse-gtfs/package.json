@@ -1,0 +1,22 @@
+{
+  "name": "parse-gtfs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "ts-node index.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "realm": "^10.8.0",
+    "ts-node": "^10.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^16.10.4",
+    "@types/realm": "^1.13.0",
+    "tslib": "^2.3.1",
+    "typescript": "^4.4.4"
+  }
+}
