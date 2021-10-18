@@ -30,13 +30,13 @@ export const LeftOptions = styled.View`
 export const WhereToContainer = styled.View<ThemeProps>`
   position: absolute;
   justify-content: center;
-  bottom: 45px;
+  bottom: 4px;
   width: 80%;
   height: 55px;
   border: 1px solid ${({ theme }) => theme.color.gray};
   background: #fff;
   border-radius: 45px;
-  padding: 0 23px;
+  padding: 0 10px;
 `;
 
 export const WhereToButton = styled(RectButton)`

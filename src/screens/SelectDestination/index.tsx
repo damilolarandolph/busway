@@ -1,10 +1,10 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { AppState, ImageURISource, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import tailwind from 'tailwind-rn';
 import { TouchableHighlight } from 'react-native-gesture-handler';
-import context, { Place } from '../../context/app';
+import context from '../../context/app';
 import Button from '../../components/Button';
 
 import * as S from './styles';
@@ -12,6 +12,7 @@ import homeIcon from '../../assets/home.png';
 import historyIcon from '../../assets/history.png';
 
 import GooglePlaces from '../../hooks/autocomplete/index';
+import useRouteEngine from '../../hooks/router/useRouteEngine';
 
 export interface IItemProps {
   id: number;
@@ -19,17 +20,6 @@ export interface IItemProps {
   text: string;
   subtext?: string;
 }
-
-interface IRenderItemProps {
-  item: IItemProps; // TODO: Verificar
-}
-
-const data: IItemProps[] = [
-  { id: 1, icon: homeIcon, text: 'Casa', subtext: 'Spring St. 140' },
-  { id: 2, icon: historyIcon, text: 'Minas Shopping' },
-  { id: 3, icon: historyIcon, text: 'Estação Santa Inês' },
-  { id: 4, icon: historyIcon, text: 'Cidade Administrativa' },
-];
 
 export type ResultType = ReturnType<typeof GooglePlaces>['results'];
 
@@ -40,50 +30,44 @@ const SelectDestination: React.FC = () => {
     delay: 100,
   });
   const AppState = useContext(context);
+  const [routeState, setRouteState] = useState({
+    source: { name: '', lat: 0, long: 0 },
+    destination: { name: '', lat: 0, long: 0 },
+  });
   const [currentlyEntering, setCurrentlyEntering] = useState(0);
+  const routeEngine = useRouteEngine();
 
-  function renderItem({ item }: any) {
-    return (
-      <TouchableHighlight
-        onPress={() => alert('Pressed')}
-        activeOpacity={0.6}
-        underlayColor="#DDDDDD"
-      >
-        <S.HistoryItem style={tailwind('flex w-full p-3')}>
-          <S.ItemIcon style={tailwind('mx-2')} source={historyIcon} />
-          <View style={tailwind('flex-1 ')}>
-            <S.ItemText>{item.description}</S.ItemText>
-          </View>
-          {/* <S.ItemText small>{item.description}</S.ItemText> */}
-        </S.HistoryItem>
-      </TouchableHighlight>
-    );
-  }
+  useEffect(() => {
+    if (routeEngine.status === 'success') {
+      console.log(routeEngine.tripRoute, 'trip route');
+      AppState.setState({ onTrip: true, currentTrip: routeEngine.tripRoute });
+      navigation.navigate('CurrentLocation');
+    }
+  }, [routeEngine.status]);
 
   const onPress = item => {
     onSelect(item, ({ coordinates }) => {
-      const patch: Place = {
-        name: item.description,
-        lat: coordinates.latitude,
-        long: coordinates.longitude,
-      };
-      const { stops } = AppState.state.currentTrip.trip;
-      const current =
-        AppState.state.currentTrip.trip.stops[currentlyEntering - 1];
       switch (currentlyEntering) {
         case 0:
-          AppState.state.currentTrip.trip.source = patch;
+          setRouteState({
+            ...routeState,
+            source: {
+              name: item.description,
+              lat: coordinates.latitude,
+              long: coordinates.longitude,
+            },
+          });
           break;
-        default:
-          if (!current) {
-            AppState.state.currentTrip.trip.stops.push(patch);
-          } else {
-            stops.splice(currentlyEntering - 1, 1, patch);
-            AppState.state.currentTrip.trip.stops = stops;
-          }
+        case 1:
+          setRouteState({
+            ...routeState,
+            destination: {
+              name: item.description,
+              lat: coordinates.latitude,
+              long: coordinates.longitude,
+            },
+          });
       }
-
-      AppState.setState({ ...AppState.state });
     });
   };
 
@@ -116,12 +100,26 @@ const SelectDestination: React.FC = () => {
         <S.FromTo>
           <S.From
             onFocus={() => setCurrentlyEntering(0)}
-            onChangeText={i => onChange(i)}
+            onChangeText={i => {
+              setRouteState({
+                ...routeState,
+                source: { ...routeState.source, name: i },
+              });
+              onChange(i);
+            }}
+            value={routeState.source.name}
             placeholder="Choose source"
           />
           <S.From
             onFocus={() => setCurrentlyEntering(1)}
-            onChangeText={i => onChange(i)}
+            onChangeText={i => {
+              setRouteState({
+                ...routeState,
+                destination: { ...routeState.destination, name: i },
+              });
+              onChange(i);
+            }}
+            value={routeState.destination.name}
             placeholder="Choose destination"
           />
         </S.FromTo>
@@ -133,7 +131,19 @@ const SelectDestination: React.FC = () => {
         renderItem={renderItem}
       />
       <S.BottomContainer>
-        <Button onPress={() => navigation.navigate('Request')}>Done</Button>
+        <Button
+          onPress={async () => {
+            routeEngine.routeTrip(
+              { lat: routeState.source.lat, long: routeState.source.long },
+              {
+                lat: routeState.destination.lat,
+                long: routeState.destination.long,
+              },
+            );
+          }}
+        >
+          Done
+        </Button>
       </S.BottomContainer>
     </S.Container>
   );

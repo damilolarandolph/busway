@@ -6,11 +6,8 @@ import { Polyline, Marker, Callout } from 'react-native-maps';
 
 import homeMarker from '../../assets/home_marker.png';
 import destMarker from '../../assets/dest_marker.png';
-import visa from '../../assets/visa.png';
-import customMapStyle from '../../mapstyle.json';
 
 import Header from '../../components/Header';
-import CarButton from '../../components/CarButton';
 import Button from '../../components/Button';
 import theme from '../../theme';
 

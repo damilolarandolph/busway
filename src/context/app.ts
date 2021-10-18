@@ -1,20 +1,9 @@
+import { Trip } from 'hooks/router/useRouteEngine';
 import { createContext } from 'react';
 
-export interface Place {
-  name: string;
-  long: number;
-  lat: number;
-}
-
-export interface Trip {
-  source: Place | null;
-  stops: Array<Place>;
-}
-
 export interface AppContext {
-  currentTrip: {
-    trip: Trip;
-  };
+  currentTrip: Trip | null;
+  onTrip: boolean;
 }
 
 const context = createContext<{
@@ -22,9 +11,8 @@ const context = createContext<{
   setState: (slice: AppContext) => void;
 }>({
   state: {
-    currentTrip: {
-      trip: { source: null, stops: [] },
-    },
+    currentTrip: null,
+    onTrip: false,
   },
   setState: () => {},
 });
