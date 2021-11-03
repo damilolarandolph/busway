@@ -1,4 +1,4 @@
-# React Native Taxi App UI
+# Busway
 
 ![layout preview](https://static.dribbble.com/users/249315/screenshots/9672694/media/324e429ae37c7e4176801a246f934eaa.png)
 
@@ -19,7 +19,7 @@ The layout can be found in: https://www.uistore.design/items/roxio-free-taxi-app
 
 Clone this repo:
 
-    git clone https://github.com/jonatasfl/react-native-taxi-app-ui.git
+    git clone https://github.com/damilolarandolph/busway.git
 
 Install Dependencies:
 

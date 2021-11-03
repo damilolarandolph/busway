@@ -14,7 +14,6 @@ import theme from '../../theme';
 import * as S from './styles';
 
 const Request: React.FC = () => {
-  const [selected, setSelected] = useState('economy');
 
   const navigation = useNavigation();
 
